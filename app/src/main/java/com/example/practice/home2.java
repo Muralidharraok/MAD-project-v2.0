@@ -67,26 +67,7 @@ public class home2 extends AppCompatActivity {
             }
         });
     }
-//    public class Notify
-//    {
-//        String Title,Desc;
-//        public Notify() {}
-//
-//   //     @NonNull
-////        @Override
-////        public String toString() {
-////
-////            return this.Title+"/n"+this.Desc;
-////        }
-//        public String getTitle()
-//        {
-//            return this.Title;
-//        }
-//        public  String getDesc()
-//        {
-//            return this.Desc;
-//        }
-//    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
