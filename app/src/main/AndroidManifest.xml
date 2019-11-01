@@ -7,11 +7,15 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="SYNCUP"
+
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".home2"></activity>
+        <activity android:name=".addFacultyDetails"></activity>
+        <activity android:name=".facultyDetails" />
+        <activity android:name=".signUpPage" />
+        <activity android:name=".home2" />
         <activity android:name=".Post_content" />
         <activity android:name=".home" />
         <activity android:name=".MainActivity">

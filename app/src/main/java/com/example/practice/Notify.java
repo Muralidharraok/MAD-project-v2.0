@@ -1,5 +1,7 @@
 package com.example.practice;
 
+import androidx.annotation.NonNull;
+
 public class Notify {
     String Title,Desc;
 
@@ -21,5 +23,10 @@ public class Notify {
         Desc = desc;
     }
 
-
+    @NonNull
+    @Override
+    public String toString() {
+        return Title+":"+ Desc;
+        //return super.toString();
+    }
 }

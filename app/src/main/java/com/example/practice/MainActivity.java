@@ -73,7 +73,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void updateUI(final FirebaseUser user) {
         if (user != null) {
-            startActivity(new Intent(MainActivity.this, home2.class));
+            startActivity(new Intent(MainActivity.this, home.class));
+            finish();
         }
     }
 

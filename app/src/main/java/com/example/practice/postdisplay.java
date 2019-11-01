@@ -1,23 +1,23 @@
 package com.example.practice;
 
 public class postdisplay {
-    String Notice;
+    String Desc;
     String Title;
     public postdisplay()
     {
 
     }
     public postdisplay(String notice, String title) {
-        this.Notice = notice;
+        this.Desc = notice;
         this.Title = title;
     }
 
     public String getNotice() {
-        return Notice;
+        return Desc;
     }
 
     public void setNotice(String notice) {
-        this.Notice = notice;
+        this.Desc = notice;
     }
 
     public String getTitle() {
