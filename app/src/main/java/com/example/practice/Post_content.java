@@ -54,7 +54,7 @@ public class Post_content extends AppCompatActivity  {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // startActivity(new Intent(Post_content.this,home.class));
+                startActivity(new Intent(Post_content.this,home.class));
                 finish();
             }
         });
@@ -102,8 +102,12 @@ public class Post_content extends AppCompatActivity  {
             DatabaseReference newpost =databaseReference.push();
             newpost.child("Title").setValue(posttile);
             newpost.child("Desc").setValue(postdesc);
-          //  newpost.child("uid").setValue(FirebaseAuth.get)
+            //  newpost.child("uid").setValue(FirebaseAuth.get)
             Toast.makeText(getApplicationContext(),"posted",Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Toast.makeText(getApplicationContext(),"Please enter all the fields",Toast.LENGTH_SHORT).show();
         }
         title.getText().clear();
         desc.getText().clear();

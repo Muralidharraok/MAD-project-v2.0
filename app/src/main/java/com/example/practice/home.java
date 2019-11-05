@@ -5,10 +5,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,16 +45,20 @@ import java.util.List;
 public class home extends AppCompatActivity {
     DatabaseReference databaseReference;
     RecyclerView postl;
-    String permval= "";
+    public String permval= "";
     int flag;
     FirebaseFirestore firebaseFirestore;
     FirebaseAuth us;
     String uid;
+    private ProgressBar mProgressCircle;
+   // SwipeRefreshLayout swipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         postl = findViewById(R.id.postlist);
+        mProgressCircle = findViewById(R.id.progress_circle);
+        //swipeRefreshLayout = findViewById(R.id.swipe);
         postl.setHasFixedSize(true);
         postl.setLayoutManager(new LinearLayoutManager(this));
         databaseReference = FirebaseDatabase.getInstance().getReference().child("Notice");
@@ -70,6 +77,19 @@ public class home extends AppCompatActivity {
 //        Adapter adapter=new Adapter(postlist);
 //        postl.setAdapter(adapter);
 //        adapter.notifyDataSetChanged();
+//        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+//            @Override
+//            public void onRefresh() {
+//                startActivity(new Intent(home.this,home.class));
+//                finish();
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        swipeRefreshLayout.setRefreshing(false);
+//                    }
+//                },4000);
+//            }
+//        });
         databaseReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -83,6 +103,7 @@ public class home extends AppCompatActivity {
                     Adapter adapter=new Adapter(postlist);
                     postl.setAdapter(adapter);
                     adapter.notifyDataSetChanged();
+                    mProgressCircle.setVisibility(View.INVISIBLE);
                     //  arrayAdapter.add(postTitle);
                     // arrayAdapter.add(postDesc);
                    // postlist.notifyDataSetChanged();
@@ -90,6 +111,7 @@ public class home extends AppCompatActivity {
                 catch (Exception e)
                 {
                     Toast.makeText(getApplicationContext(),"Something went wrong",Toast.LENGTH_LONG).show();
+                    mProgressCircle.setVisibility(View.INVISIBLE);
                 }
             }
 
@@ -100,8 +122,8 @@ public class home extends AppCompatActivity {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                startActivity(new Intent(home.this,home.class));
-                finish();
+            //    startActivity(new Intent(home.this,home.class));
+            //    finish();
             }
 
             @Override
@@ -260,11 +282,11 @@ public class home extends AppCompatActivity {
                         DocumentSnapshot doc =task.getResult();
                         String WP = doc.getString("WritePer");
                         checkperm(WP);
-                        Toast.makeText(getApplicationContext(),"in"+WP,Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getApplicationContext(),"in"+WP,Toast.LENGTH_SHORT).show();
 
                 }
             }});
-          Toast.makeText(getApplicationContext(),"out"+permval,Toast.LENGTH_SHORT).show();
+        //  Toast.makeText(getApplicationContext(),"out"+permval,Toast.LENGTH_SHORT).show();
 
                 if (!permval.equals("Yes")) {
                     menu.findItem(R.id.f2).setEnabled(false);
@@ -299,11 +321,14 @@ public class home extends AppCompatActivity {
                 return true;
             case R.id.f3:
                 startActivity(new Intent(home.this, signUpPage.class));
-               // finish();
+                finish();
                 return true;
             case R.id.f4:
-                startActivity(new Intent(home.this, facultyDetails.class));
-               // finish();
+                Intent intent = new Intent(home.this, facultyDetails.class);
+                intent.putExtra("perm",permval);
+                startActivity(intent);
+                finish();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 

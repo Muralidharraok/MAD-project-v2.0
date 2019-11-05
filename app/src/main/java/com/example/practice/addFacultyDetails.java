@@ -9,6 +9,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.webkit.MimeTypeMap;
 import android.widget.Button;
@@ -16,8 +17,10 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -32,6 +35,7 @@ public class addFacultyDetails extends AppCompatActivity {
     ImageView imageView;
     ProgressDialog progressDialog;
     Uri uri;
+    String perm="",downLoadUrl;
     private static final int PICK_IMAGE_REQUEST =1;
     private StorageReference mStorageRef;
     private DatabaseReference databaseReference;
@@ -40,6 +44,8 @@ public class addFacultyDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_faculty_details);
+        Intent i = getIntent();
+        perm = i.getStringExtra("perm");
         upload = findViewById(R.id.upload);
         back = findViewById(R.id.back);
         chooseFile = findViewById(R.id.choosefile);
@@ -51,7 +57,9 @@ public class addFacultyDetails extends AppCompatActivity {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //startActivity(new Intent(addFacultyDetails.this,facultyDetails.class));
+                Intent intent = new Intent(addFacultyDetails.this, facultyDetails.class);
+                intent.putExtra("perm",perm);
+                startActivity(intent);
                 finish();
             }
         });
@@ -105,25 +113,27 @@ public class addFacultyDetails extends AppCompatActivity {
             try {
                 progressDialog.setMessage("Uploading...");
                 progressDialog.show();
-                StorageReference fileRefernce = mStorageRef.child(System.currentTimeMillis() + "." + getFileExtension(uri));
+                final StorageReference fileRefernce = mStorageRef.child(System.currentTimeMillis() + "." + getFileExtension(uri));
                 mUploadTask=fileRefernce.putFile(uri)
                         .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                             @Override
                             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                  Upload u = new Upload(fileName.getText().toString().trim(), taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
-                                  String uploadId = databaseReference.push().getKey();
-                                //  Toast.makeText(addFacultyDetails.this, uploadId, Toast.LENGTH_SHORT).show();
+                                fileRefernce.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        downLoadUrl =uri.toString();
+                                        Toast.makeText(getApplicationContext(),downLoadUrl,Toast.LENGTH_SHORT).show();
+                                        store(downLoadUrl);
+                                    }
+                                });
+                                //  Upload u = new Upload(fileName.getText().toString().trim(), taskSnapshot.getMetadata().getReference().getDownloadUrl().toString());
+                               // Upload u = new Upload(fileName.getText().toString().trim(), downLoadUrl);
 
-                                 databaseReference.child(uploadId).setValue(u);
-                                  progressDialog.dismiss();
-                                Toast.makeText(addFacultyDetails.this, "Successfully Uploaded"+uploadId, Toast.LENGTH_SHORT).show();
-                                /*
-                                DatabaseReference newpost =databaseReference.push();
-                                newpost.child("Title").setValue(posttile);
-                                newpost.child("Desc").setValue(postdesc);
-                                //  newpost.child("uid").setValue(FirebaseAuth.get)
-                                Toast.makeText(getApplicationContext(),"posted",Toast.LENGTH_SHORT).show();
-                                */
+                               // String uploadId = databaseReference.push().getKey();
+                                 // databaseReference.child(uploadId).setValue(u);
+                                 // progressDialog.dismiss();
+                                //  Toast.makeText(addFacultyDetails.this, "Successfully Uploaded"+uploadId, Toast.LENGTH_SHORT).show();
+
 
                             }
                         })
@@ -143,5 +153,13 @@ public class addFacultyDetails extends AppCompatActivity {
         {
             Toast.makeText(this,"No file selected",Toast.LENGTH_SHORT).show();
         }
+    }
+    public void store(String link)
+    {
+         Upload u = new Upload(fileName.getText().toString().trim(), link);
+         String uploadId = databaseReference.push().getKey();
+         databaseReference.child(uploadId).setValue(u);
+         progressDialog.dismiss();
+         Toast.makeText(addFacultyDetails.this, "Successfully Uploaded", Toast.LENGTH_SHORT).show();
     }
 }
